@@ -5,11 +5,21 @@ import viteLogo from '/vite.svg';
 import reactLogo from './assets/react.svg';
 import PodcastCreator from './components/PodcastCreator';
 import PodcastPlayer from './components/PodcastPlayer';
+import PodcastHistory from './components/PodcastHistory';
+import Settings from './components/Settings';
+
+const TABS = {
+  CREATE: 'Create',
+  PLAYER: 'Player',
+  HISTORY: 'History',
+  SETTINGS: 'Settings',
+};
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark';
   });
+  const [activeTab, setActiveTab] = useState(TABS.CREATE);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -40,23 +50,57 @@ export default function App() {
         </Button>
       </div>
 
-      {/* Main Content */}
-      <main className="p-6 space-y-12">
-        {/* Podcast Creation */}
-        <section className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold mb-4">🎙️ Create Your Podcast</h2>
-          <PodcastCreator />
-        </section>
+      {/* Navigation Tabs */}
+      <div className="flex justify-center space-x-4 py-4 border-b border-gray-200 dark:border-gray-700">
+        {Object.entries(TABS).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(label)}
+            className={clsx(
+              'px-4 py-2 rounded-full font-medium transition-colors',
+              activeTab === label
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
 
-        {/* Podcast Player Preview */}
-        <section className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold mb-4">🎧 Preview Player</h2>
-          <PodcastPlayer
-            title="Sample Episode: The Future of AI"
-            audioSrc="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-            thumbnail="https://placehold.co/600x400/black/white?text=Podcast+Cover"
-          />
-        </section>
+      {/* Main Content */}
+      <main className="p-6 space-y-12 max-w-4xl mx-auto">
+        {activeTab === TABS.CREATE && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">🎙️ Create Your Podcast</h2>
+            <PodcastCreator />
+          </section>
+        )}
+
+        {activeTab === TABS.PLAYER && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">🎧 Preview Player</h2>
+            <PodcastPlayer
+              title="Sample Episode: The Future of AI"
+              audioSrc="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+              thumbnail="https://placehold.co/600x400/black/white?text=Podcast+Cover"
+            />
+          </section>
+        )}
+
+        {activeTab === TABS.HISTORY && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">🗂️ Podcast History</h2>
+            <PodcastHistory />
+          </section>
+        )}
+
+        {activeTab === TABS.SETTINGS && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">⚙️ Settings</h2>
+            <Settings darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />
+          </section>
+        )}
       </main>
     </div>
   );
