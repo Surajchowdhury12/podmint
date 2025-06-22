@@ -1,24 +1,21 @@
-import { Link } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Button from '../components/Button';
-import reactLogo from '../assets/react.svg';
-import viteLogo from '/vite.svg';
+import { Link } from "react-router-dom";
+import { Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import Button from "../components/Button";
 
 export default function Landing() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white flex flex-col">
-      
       {/* 🔮 Animated Background Blobs */}
       <motion.div
         className="absolute -top-32 -left-32 w-96 h-96 bg-violet-400 dark:bg-violet-600 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse z-0"
         animate={{ x: [0, 40, -40, 0], y: [0, 30, -30, 0] }}
-        transition={{ repeat: Infinity, duration: 15, ease: 'easeInOut' }}
+        transition={{ repeat: Infinity, duration: 15, ease: "easeInOut" }}
       />
       <motion.div
         className="absolute -bottom-32 -right-32 w-96 h-96 bg-pink-400 dark:bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse z-0"
         animate={{ x: [0, -30, 30, 0], y: [0, -40, 40, 0] }}
-        transition={{ repeat: Infinity, duration: 18, ease: 'easeInOut' }}
+        transition={{ repeat: Infinity, duration: 18, ease: "easeInOut" }}
       />
 
       {/* Header */}
@@ -29,9 +26,11 @@ export default function Landing() {
         className="p-6 flex justify-between items-center z-10"
       >
         <div className="flex items-center space-x-3">
-          <img src={viteLogo} className="h-8" />
-          <img src={reactLogo} className="h-8" />
-          <span className="text-2xl font-bold tracking-tight">PodMint 🎙️</span>
+          <img
+            src="/podmint-logo.png"
+            alt="PodMint Logo"
+            className="h-20 w-auto transition-transform duration-300 hover:scale-105"
+          />
         </div>
         <Link to="/app">
           <Button>Enter PodMint</Button>
@@ -54,7 +53,8 @@ export default function Landing() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="text-4xl font-extrabold leading-tight sm:text-5xl mb-4"
         >
-          Turn Ideas into <span className="text-violet-600">Podcasts</span> in Seconds
+          Turn Ideas into <span className="text-violet-600">Podcasts</span> in
+          Seconds
         </motion.h1>
 
         <motion.p
@@ -63,7 +63,8 @@ export default function Landing() {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="max-w-xl text-lg text-gray-600 dark:text-gray-300 mb-6"
         >
-          PodMint lets you generate AI-powered podcasts with just a prompt. No mic, no editing — just your voice and our magic.
+          PodMint lets you generate AI-powered podcasts with just a prompt. No
+          mic, no editing — just your voice and our magic.
         </motion.p>
 
         <motion.div

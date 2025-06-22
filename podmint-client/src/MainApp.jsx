@@ -1,34 +1,33 @@
-import { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import Button from './components/Button';
-import viteLogo from '/vite.svg';
-import reactLogo from './assets/react.svg';
-import PodcastCreator from './components/PodcastCreator';
-import PodcastPlayer from './components/PodcastPlayer';
-import PodcastHistory from './components/PodcastHistory';
-import Settings from './components/Settings';
+import { useEffect, useState } from "react";
+import clsx from "clsx";
+import Button from "./components/Button";
+import reactLogo from "./assets/react.svg";
+import PodcastCreator from "./components/PodcastCreator";
+import PodcastPlayer from "./components/PodcastPlayer";
+import PodcastHistory from "./components/PodcastHistory";
+import Settings from "./components/Settings";
 
 const TABS = {
-  CREATE: 'Create',
-  PLAYER: 'Player',
-  HISTORY: 'History',
-  SETTINGS: 'Settings',
+  CREATE: "Create",
+  PLAYER: "Player",
+  HISTORY: "History",
+  SETTINGS: "Settings",
 };
 
 export default function MainApp() {
   const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem('theme') === 'dark';
+    return localStorage.getItem("theme") === "dark";
   });
   const [activeTab, setActiveTab] = useState(TABS.CREATE);
 
   useEffect(() => {
     const root = window.document.documentElement;
     if (darkMode) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
     } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
 
@@ -37,16 +36,14 @@ export default function MainApp() {
       {/* Header */}
       <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
         <div className="flex space-x-4 items-center">
-          <a href="https://vitejs.dev" target="_blank" rel="noopener noreferrer">
-            <img src={viteLogo} className="h-8" alt="Vite logo" />
-          </a>
-          <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
-            <img src={reactLogo} className="h-8" alt="React logo" />
-          </a>
-          <span className="ml-4 text-lg font-semibold">PodMint 🎙️</span>
+          <img
+            src="/podmint-logo.png"
+            alt="PodMint Logo"
+            className="h-20 w-auto transition-transform duration-300 hover:scale-105"
+          />
         </div>
         <Button onClick={() => setDarkMode(!darkMode)}>
-          Toggle {darkMode ? 'Light' : 'Dark'} Mode
+          Toggle {darkMode ? "Light" : "Dark"} Mode
         </Button>
       </div>
 
@@ -57,10 +54,10 @@ export default function MainApp() {
             key={key}
             onClick={() => setActiveTab(label)}
             className={clsx(
-              'px-4 py-2 rounded-full font-medium transition-colors',
+              "px-4 py-2 rounded-full font-medium transition-colors",
               activeTab === label
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
             )}
           >
             {label}
@@ -97,7 +94,10 @@ export default function MainApp() {
         {activeTab === TABS.SETTINGS && (
           <section>
             <h2 className="text-2xl font-bold mb-4">⚙️ Settings</h2>
-            <Settings darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />
+            <Settings
+              darkMode={darkMode}
+              toggleDarkMode={() => setDarkMode(!darkMode)}
+            />
           </section>
         )}
       </main>
