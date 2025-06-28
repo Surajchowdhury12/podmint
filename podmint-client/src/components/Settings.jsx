@@ -1,14 +1,14 @@
 // src/components/Settings.jsx
-import { useState } from 'react';
-import { Moon, Sun, Trash2, Save } from 'lucide-react';
-import Button from './Button';
+import { useState } from "react";
+import { Moon, Sun, Trash2, Save } from "lucide-react";
+import Button from "./Button";
 
-export default function Settings({ darkMode, toggleDarkMode }) {
-  const [defaultVoice, setDefaultVoice] = useState('Samantha');
-  const voices = ['Samantha', 'Brian', 'Emma', 'Ravi'];
+export default function Settings({ darkMode, onThemeChange }) {
+  const [defaultVoice, setDefaultVoice] = useState("Samantha");
+  const voices = ["Samantha", "Brian", "Emma", "Ravi"];
 
   const handleClearHistory = () => {
-    alert('Podcast history cleared (mock)');
+    alert("Podcast history cleared (mock)");
   };
 
   return (
@@ -22,7 +22,9 @@ export default function Settings({ darkMode, toggleDarkMode }) {
         />
         <div>
           <h2 className="text-xl font-semibold">Suraj Chowdhury</h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">suraj@podmint.ai</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            suraj@podmint.ai
+          </p>
         </div>
       </div>
 
@@ -31,7 +33,7 @@ export default function Settings({ darkMode, toggleDarkMode }) {
         {/* Theme Toggle */}
         <div className="flex justify-between items-center">
           <span className="font-medium">Dark Mode</span>
-          <Button onClick={toggleDarkMode} variant="ghost">
+          <Button onClick={() => onThemeChange(!darkMode)} variant="ghost">
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
           </Button>
         </div>
