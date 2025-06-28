@@ -17,6 +17,7 @@ const TABS = {
 export default function MainApp() {
   const [activeTab, setActiveTab] = useState(TABS.CREATE);
   const [darkMode, setDarkMode] = useState(false);
+  const [latestPodcast, setLatestPodcast] = useState(null);
 
   // Load dark mode setting from localStorage
   useEffect(() => {
@@ -87,7 +88,7 @@ export default function MainApp() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <PodcastCreator />
+            <PodcastCreator onPodcastReady={setLatestPodcast} />
           </motion.section>
         )}
 
@@ -98,7 +99,7 @@ export default function MainApp() {
             transition={{ duration: 0.4 }}
           >
             <h2 className="text-2xl font-bold mb-4">🎧 Listen to Podcasts</h2>
-            <PodcastPlayer />
+            <PodcastPlayer podcast={latestPodcast} />
           </motion.section>
         )}
 
@@ -119,10 +120,7 @@ export default function MainApp() {
             transition={{ duration: 0.4 }}
           >
             <h2 className="text-2xl font-bold mb-4">⚙️ Settings</h2>
-            <Settings
-              darkMode={darkMode}
-              onThemeChange={handleThemeChange}
-            />
+            <Settings darkMode={darkMode} onThemeChange={handleThemeChange} />
           </motion.section>
         )}
 
