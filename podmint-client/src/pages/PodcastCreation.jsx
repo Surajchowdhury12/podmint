@@ -1,15 +1,26 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/Button"; // assume you're using shadcn or your custom Button
-import { Card } from "@/components/ui/Card";
-import clsx from "clsx";
-
+import Button from "../components/Button";
+import Card from "../components/Card";
+import { generatePodcastScript } from "../utils/gptMock";
+import { synthesizeSpeech } from "../utils/ttsMock";
 export default function PodcastCreation() {
   const [prompt, setPrompt] = useState("");
   const [voice, setVoice] = useState("en-US-JennyNeural");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
-  const handleCreate = () => {
-    // Placeholder: send prompt + voice to backend
-    alert(`Creating podcast with voice: ${voice}\nPrompt: ${prompt}`);
+  const handleCreate = async () => {
+    if (!prompt.trim()) return;
+    setLoading(true);
+    try {
+      const script = await generatePodcastScript(prompt);
+      const audioUrl = await synthesizeSpeech(script, voice);
+      setResult({ script, audioUrl });
+    } catch (err) {
+      alert("Something went wrong generating the podcast.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -18,7 +29,9 @@ export default function PodcastCreation() {
 
       <Card className="p-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Enter your prompt</label>
+          <label className="block text-sm font-medium mb-1">
+            Enter your prompt
+          </label>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
@@ -39,14 +52,29 @@ export default function PodcastCreation() {
             <option value="en-US-GuyNeural">Guy (US)</option>
             <option value="en-GB-SoniaNeural">Sonia (UK)</option>
             <option value="hi-IN-SwaraNeural">Swara (Hindi)</option>
-            {/* Add more voices later */}
           </select>
         </div>
 
-        <Button onClick={handleCreate} className="w-full md:w-auto">
-          🎧 Generate Podcast
+        <Button
+          onClick={handleCreate}
+          className="w-full md:w-auto"
+          disabled={loading}
+        >
+          {loading ? "Generating..." : "🎧 Generate Podcast"}
         </Button>
       </Card>
+
+      {result && (
+        <Card className="p-6 mt-8 space-y-4">
+          <h2 className="text-xl font-semibold">🎬 Generated Script</h2>
+          <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+            {result.script}
+          </p>
+
+          <h2 className="text-xl font-semibold">🔊 Audio Preview</h2>
+          <audio controls src={result.audioUrl} className="w-full" />
+        </Card>
+      )}
     </div>
   );
 }

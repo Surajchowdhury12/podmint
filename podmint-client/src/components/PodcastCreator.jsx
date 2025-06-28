@@ -1,18 +1,47 @@
+// src/components/PodcastCreator.jsx
 import { useState } from "react";
+import { generatePodcastScript } from "../utils/gptMock";
+import { synthesizeSpeech } from "../utils/ttsMock";
+import Button from "./Button"; // Optional: you can replace with native button if needed
 
-const PodcastCreator = () => {
+const voices = [
+  { value: "default", label: "Default Voice" },
+  { value: "female", label: "Female Voice" },
+  { value: "male", label: "Male Voice" },
+  { value: "robotic", label: "Robotic Voice" },
+];
+
+const PodcastCreator = ({ onPodcastReady }) => {
   const [prompt, setPrompt] = useState("");
   const [voice, setVoice] = useState("default");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    alert(`Generating podcast with prompt: "${prompt}" using voice: ${voice}`);
-    // You can later trigger API request here
+  const handleSubmit = async () => {
+    if (!prompt.trim()) return;
+
+    setLoading(true);
+    try {
+      const script = await generatePodcastScript(prompt);
+      const audioUrl = await synthesizeSpeech(script, voice);
+      onPodcastReady?.({
+        title: prompt,
+        script,
+        voice,
+        audioUrl,
+      });
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800 dark:text-white">🎙️ Create a Podcast</h1>
-      
+      <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+        🎙️ Create a Podcast
+      </h1>
+
       <textarea
         rows="4"
         className="w-full p-4 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -26,17 +55,19 @@ const PodcastCreator = () => {
         value={voice}
         onChange={(e) => setVoice(e.target.value)}
       >
-        <option value="default">Default Voice</option>
-        <option value="female">Female Voice</option>
-        <option value="male">Male Voice</option>
-        <option value="robotic">Robotic Voice</option>
+        {voices.map((v) => (
+          <option key={v.value} value={v.value}>
+            {v.label}
+          </option>
+        ))}
       </select>
 
       <button
         onClick={handleSubmit}
-        className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition transform hover:scale-105"
+        disabled={loading}
+        className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition transform hover:scale-105 disabled:opacity-50"
       >
-        🚀 Generate Podcast
+        {loading ? "Generating..." : "🚀 Generate Podcast"}
       </button>
     </div>
   );
