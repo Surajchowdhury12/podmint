@@ -1,16 +1,11 @@
-// routes/audio.js
-import "../config.js"; // Load .env variables
+import "../config.js";
 import express from "express";
-import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
+import gTTS from "gtts";
+import mp3Duration from "mp3-duration"; // <--- install this
 
 const router = express.Router();
-
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 router.post("/generate-audio", async (req, res) => {
   try {
@@ -19,28 +14,34 @@ router.post("/generate-audio", async (req, res) => {
       return res.status(400).json({ error: "Text is required" });
     }
 
-    // Generate speech using OpenAI TTS
-    const mp3 = await openai.audio.speech.create({
-      model: "gpt-4o-mini-tts", // TTS model
-      voice: "alloy",           // Voice options: alloy, verse, etc.
-      input: text,
-    });
-
-    // Save to public/audio folder
     const fileName = `podcast-${Date.now()}.mp3`;
     const filePath = path.join("public", "audio", fileName);
 
     // Ensure directory exists
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
 
-    // Convert ArrayBuffer → Buffer → File
-    const buffer = Buffer.from(await mp3.arrayBuffer());
-    fs.writeFileSync(filePath, buffer);
+    // Generate audio using gTTS
+    const gtts = new gTTS(text, "en");
+    gtts.save(filePath, (err) => {
+      if (err) {
+        console.error("Error generating audio:", err);
+        return res.status(500).json({ error: "Failed to generate audio" });
+      }
 
-    // Return file URL
-    res.json({
-      audioUrl: `/audio/${fileName}`,
+      // Get duration after saving
+      mp3Duration(filePath, (err, duration) => {
+        if (err) {
+          console.error("Error getting duration:", err);
+          return res.status(500).json({ error: "Failed to get audio duration" });
+        }
+
+        res.json({
+          audioUrl: `/audio/${fileName}`,
+          duration: Number(duration.toFixed(2)) // in seconds
+        });
+      });
     });
+
   } catch (error) {
     console.error("Error generating audio:", error);
     res.status(500).json({ error: "Failed to generate audio" });
