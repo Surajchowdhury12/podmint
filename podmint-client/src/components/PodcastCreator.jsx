@@ -1,8 +1,8 @@
-// src/components/PodcastCreator.jsx
 import { useState } from "react";
-import { generatePodcastScript } from "../utils/gptMock";
-import { synthesizeSpeech } from "../utils/ttsMock";
-import Button from "./Button"; // Optional: you can replace with native button if needed
+import { generateScript, generateAudio } from "../utils/api";
+import Button from "./Button"; // Optional
+import { CheckCircle, Loader2 } from "lucide-react"; // install lucide-react if not done
+import { motion } from "framer-motion"; // for smooth animation (optional)
 
 const voices = [
   { value: "default", label: "Default Voice" },
@@ -15,26 +15,34 @@ const PodcastCreator = ({ onPodcastReady }) => {
   const [prompt, setPrompt] = useState("");
   const [voice, setVoice] = useState("default");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async () => {
-    if (!prompt.trim()) return;
+  if (!prompt.trim()) return;
 
-    setLoading(true);
-    try {
-      const script = await generatePodcastScript(prompt);
-      const audioUrl = await synthesizeSpeech(script, voice);
-      onPodcastReady?.({
-        title: prompt,
-        script,
-        voice,
-        audioUrl,
-      });
-    } catch (error) {
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  setSuccess(false);
+
+  try {
+    console.log("🧠 Generating script...");
+    const script = await generateScript(prompt);
+    console.log("✅ Script generated:", script);
+
+    console.log("🔊 Generating audio...");
+    const audioUrl = await generateAudio(script, voice);
+    console.log("✅ Audio generated:", audioUrl);
+
+    onPodcastReady?.({ title: prompt, script, voice, audioUrl });
+
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 3000);
+  } catch (error) {
+    console.error("❌ Error during generation:", error);
+    alert("Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
@@ -65,10 +73,29 @@ const PodcastCreator = ({ onPodcastReady }) => {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition transform hover:scale-105 disabled:opacity-50"
+        className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition transform hover:scale-105 disabled:opacity-50 flex items-center justify-center gap-2"
       >
-        {loading ? "Generating..." : "🚀 Generate Podcast"}
+        {loading ? (
+          <>
+            <Loader2 className="animate-spin w-5 h-5" />
+            Generating...
+          </>
+        ) : (
+          "🚀 Generate Podcast"
+        )}
       </button>
+
+      {success && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="flex items-center gap-2 bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-xl shadow-sm"
+        >
+          <CheckCircle className="w-5 h-5 text-green-600" />
+          <span>Podcast generated successfully!</span>
+        </motion.div>
+      )}
     </div>
   );
 };
